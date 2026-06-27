@@ -53,10 +53,11 @@ pipeline {
 
                         // Tìm chuỗi tag cũ trong file values.yaml bằng Regex
                         def valuesContent = readFile 'config-repo/values.yaml'
-                        def currentTagMatch = valuesContent =~ /tag:\s*([^\s]+)/
+                        def matcher = valuesContent =~ /tag:\s*([^\s]+)/
 
-                        if (currentTagMatch) {
-                            def currentTag = currentTagMatch[0][1]
+                        if (matcher.find()) {
+                            def currentTag = matcher.group(1)
+                            matcher = null // Giải phóng bộ nhớ của matcher
                             echo "Tag hiện tại đang chạy trên hệ thống: ${currentTag}"
 
                             // Sử dụng lệnh 'sort -V' của Linux để so sánh 2 chuỗi phiên bản số
