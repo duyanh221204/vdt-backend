@@ -21,7 +21,7 @@ add_exception_handlers(app=app)
 
 @app.get('/', tags=['Root'])
 async def root():
-    return {'message': 'Hello World!'}
+    return {'message': 'Hello Viettel Digital Talent 2026!'}
 
 app.include_router(auth_router.router)
 app.include_router(student_router.router)
