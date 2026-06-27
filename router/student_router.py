@@ -24,15 +24,6 @@ async def get_all_students(
     return await student_service.get_all_students()
 
 
-@router.get('/{student_id}', response_model=ApiResponse[StudentResponse])
-async def get_student_by_id(
-        student_id: int,
-        student_service: Annotated[StudentService, Depends(get_student_service)],
-        _=Depends(get_current_user)
-):
-    return await student_service.get_student_by_id(student_id)
-
-
 @router.post('', response_model=ApiResponse[StudentResponse])
 async def create_student(
         data: StudentRequest,

@@ -28,16 +28,6 @@ class StudentService:
             data=[StudentResponse.model_validate(student) for student in students]
         )
 
-    async def get_student_by_id(self, student_id: int) -> ApiResponse[StudentResponse]:
-        student = (await self.db.execute(select(Student).where(Student.id == student_id))).scalar_one_or_none()
-        if student is None:
-            raise AppException(ErrorCode.STUDENT_NOT_FOUND)
-
-        return ApiResponse(
-            message='Retrieve student successfully',
-            data=StudentResponse.model_validate(student)
-        )
-
     async def create_student(self, data: StudentRequest) -> ApiResponse[StudentResponse]:
         student = Student(**data.model_dump())
         self.db.add(student)
