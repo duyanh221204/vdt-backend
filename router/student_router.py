@@ -1,9 +1,11 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from starlette.requests import Request
 
 from configuration.authentication import get_current_user
 from configuration.authorization import require_roles
+from configuration.rate_limit import limiter
 from dto.request.student_request import StudentRequest
 from dto.response.api_response import ApiResponse
 from dto.response.student_response import StudentResponse
@@ -25,7 +27,9 @@ async def get_all_students(
 
 
 @router.post('', response_model=ApiResponse[StudentResponse])
+@limiter.limit('5/minute')
 async def create_student(
+        request: Request,
         data: StudentRequest,
         student_service: Annotated[StudentService, Depends(get_student_service)],
         _=Depends(require_roles(Role.ADMIN.value))

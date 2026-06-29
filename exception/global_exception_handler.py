@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
+from slowapi.errors import RateLimitExceeded
 from starlette import status
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -42,6 +43,17 @@ def add_exception_handlers(app: FastAPI):
             content=response.model_dump()
         )
 
+    @app.exception_handler(RateLimitExceeded)
+    async def rate_limit_exception_handler(_: Request, __: RateLimitExceeded) -> JSONResponse:
+        error = ErrorCode.TOO_MANY_REQUESTS
+        response = ApiResponse(
+            status=error.status_code,
+            message=error.message
+        )
+        return JSONResponse(
+            status_code=error.status_code,
+            content=response.model_dump()
+        )
 
     @app.exception_handler(Exception)
     async def uncategorized_exception_handler(_: Request, __: Exception) -> JSONResponse:

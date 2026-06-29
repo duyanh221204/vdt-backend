@@ -11,6 +11,7 @@ class ErrorCode(Enum):
     INVALID_NAME = ('Invalid name', status.HTTP_400_BAD_REQUEST)
     INVALID_YEAR_OF_BIRTH = ('Invalid year of birth', status.HTTP_400_BAD_REQUEST)
     STUDENT_NOT_FOUND = ('Student not found', status.HTTP_404_NOT_FOUND)
+    TOO_MANY_REQUESTS = ('Too many requests', status.HTTP_429_TOO_MANY_REQUESTS)
 
     def __init__(self, message: str, status_code: int):
         self.message = message
