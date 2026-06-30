@@ -45,6 +45,7 @@ def configure_tracing():
     trace.set_tracer_provider(provider)
 
     SQLAlchemyInstrumentor().instrument(engine=async_engine.sync_engine)
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
     formatter = logging.Formatter(
         '%(asctime)s %(levelname)s '
@@ -53,16 +54,15 @@ def configure_tracing():
     )
 
     root_logger = logging.getLogger()
-    trace_filter = TraceContextFilter()
     if not root_logger.handlers:
         handler = logging.StreamHandler()
-        handler.addFilter(trace_filter)
+        handler.addFilter(TraceContextFilter())
         handler.setFormatter(formatter)
         root_logger.addHandler(handler)
     else:
         for handler in root_logger.handlers:
             if not any(isinstance(f, TraceContextFilter) for f in handler.filters):
-                handler.addFilter(trace_filter)
+                handler.addFilter(TraceContextFilter())
             handler.setFormatter(formatter)
 
     root_logger.setLevel(logging.INFO)
