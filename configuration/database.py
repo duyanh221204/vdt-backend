@@ -14,7 +14,7 @@ DB_NAME = os.getenv('DB_NAME')
 
 SQLALCHEMY_DATABASE_URL = f'postgresql+asyncpg://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
-async_engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=True)
+async_engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=False)
 
 AsyncSessionLocal = async_sessionmaker(
     bind=async_engine,
