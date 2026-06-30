@@ -48,21 +48,25 @@ def configure_tracing():
 
     formatter = logging.Formatter(
         '%(asctime)s %(levelname)s '
-        '[trace_id=%(otelTraceID)s span_id=%(otelSpanID)s] '
+        '[trace_id=%(trace_id)s span_id=%(span_id)s] '
         '%(name)s - %(message)s'
     )
 
     root_logger = logging.getLogger()
+    trace_filter = TraceContextFilter()
     if not root_logger.handlers:
         handler = logging.StreamHandler()
-        handler.addFilter(TraceContextFilter())
+        handler.addFilter(trace_filter)
         handler.setFormatter(formatter)
         root_logger.addHandler(handler)
     else:
         for handler in root_logger.handlers:
-            handler.addFilter(TraceContextFilter())
+            if not any(isinstance(f, TraceContextFilter) for f in handler.filters):
+                handler.addFilter(trace_filter)
             handler.setFormatter(formatter)
+
     root_logger.setLevel(logging.INFO)
+
 
 def instrument_app(app: FastAPI):
     FastAPIInstrumentor().instrument_app(app)
