@@ -46,7 +46,7 @@ class MetricsMiddleware(BaseHTTPMiddleware):
             histogram = REQUEST_DURATION.labels(
                 method=request.method,
                 endpoint=endpoint
-            ).observe(duration)
+            )
 
             span = trace.get_current_span()
             context = span.get_span_context()
