@@ -1,5 +1,6 @@
 import time
 
+from opentelemetry import trace
 from prometheus_client import Counter, Histogram
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -42,9 +43,22 @@ class MetricsMiddleware(BaseHTTPMiddleware):
                 status_code=str(status_code)
             ).inc()
 
-            REQUEST_DURATION.labels(
+            histogram = REQUEST_DURATION.labels(
                 method=request.method,
                 endpoint=endpoint
             ).observe(duration)
+
+            span = trace.get_current_span()
+            context = span.get_span_context()
+            if context.is_valid:
+                histogram.observe(
+                    duration,
+                    exemplar={
+                        'trace_id': f'{context.trace_id:032x}',
+                        'span_id': f'{context.span_id:016x}'
+                    }
+                )
+            else:
+                histogram.observe(duration)
 
         return response
